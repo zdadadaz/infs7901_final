@@ -1,0 +1,54 @@
+   {% extends "layout.html" %}
+   {% block content %}
+   <div class="row">
+       <div class="col-md-3">
+           <div class="row">
+               <div class="col-md-12">
+                    <p class="lead">Best Car For U</p>
+                    <div class="list-group">
+                        <li class="list-group-item active">CAR Information</li>
+                        <li class="list-group-item">Location: {{post[4]}}</li>
+                        <li class="list-group-item">Color: {{post[5]}}</li>
+                        <li class="list-group-item">Car type: {{post[6]}}</li>
+                        <li class="list-group-item">Brand: {{post[7]}}</li>
+                        <li class="list-group-item">Price: {{post[8]}}</li>
+                        <li class="list-group-item">Manu year: {{post[9]}}</li>
+                    </div>
+               </div>  
+           </div>
+           <div class="row">
+               <div class="col-md-12">
+                    <div class="list-group">
+                        <li class="list-group-item active">Specialist Evaluation</li>
+                        <li class="list-group-item">{{post[12]}} Stars</li>
+                        <li class="list-group-item">Name: {{post[15]}}</li>
+                        <li class="list-group-item">Experience: {{post[16]}}</li>
+                    </div>
+               </div>    
+           </div>
+       </div>
+       <div class="col-md-9">
+           <div class="thumbnail" >
+               <div class="landscape">
+                    <img class="img-responsive img-thumbnail show" src="../static/data/{{post[13]}}.jpg">
+               </div>
+               <div class="caption-full">
+                   <h4 class="pull-right">{{post[2]}}</h4>
+                   <p>{{post[3]}}</p>
+                   <p>
+                       <em>Seller : {{post[14]}}</em>
+                   </p>
+                   {% if(post[10]==(currentUser)) %}
+                   <a class="btn btn-xs btn-warning" href="/Posts/{{post[0]}}/edit">Edit</a>
+                   <form class="delete-form" action="/Posts/{{post[0]}}" method="POST">
+                       <button class="btn btn-xs btn-danger">Delete</button>
+                   </form>
+                   {% endif %}
+               </div>
+           </div>
+          
+       </div>
+   </div>
+  
+
+   {% endblock content %}
