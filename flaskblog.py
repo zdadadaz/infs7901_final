@@ -355,7 +355,11 @@ def figure():
             rowdata = c.fetchall()
             # lists = [(results.index(item), item) for item in results]
             title = ('Item','User ID','username')
-            
+        elif(option == "count"):
+            query="SELECT u.Uid, u.username, COUNT(p.Postid) from User u, Post p WHERE u.Uid = p.Uid GROUP BY u.Uid ORDER BY COUNT(p.Postid) DESC"
+            c.execute(query) #Execute the query
+            rowdata = c.fetchall()
+            title = ('Item','User ID','User Name','Number of Post')
         elif(option == "avgprice"):
             # query= 'SELECT AVG(Price) FROM Post WHERE Stars = 1'
             query = 'SELECT AVG(Price), Stars FROM Post GROUP BY Stars'
