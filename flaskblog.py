@@ -372,10 +372,11 @@ def figure():
             c.execute(query) #Execute the query
             rowdata = c.fetchall()
             title = ('Item','Minimum Price ($AU)', 'Maximum Price ($AU)')
-
         num = len(title)
-        return render_template('figure.html',titles = title, rows = rowdata,num=num )
-
+        if(option is not None):
+            return render_template('figure.html',titles = title, rows = rowdata,num=num )
+        else:
+            return redirect(url_for("figure"))
 #Inspection    
 @app.route("/inspection",methods=['GET', 'POST'])
 def Inspect():
