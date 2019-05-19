@@ -304,11 +304,11 @@ CREATE TABLE `Wishlist` (
 --
 
 INSERT INTO `Wishlist` (`Wishid`, `Uid`) VALUES
-(5, 1),
-(4, 2),
+(1, 1),
+(2, 2),
 (3, 3),
-(2, 4),
-(1, 5);
+(4, 4),
+(5, 5);
 
 --
 -- Indexes for dumped tables

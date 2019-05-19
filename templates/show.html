@@ -22,7 +22,7 @@
                         <li class="list-group-item active">Specialist Evaluation</li>
                         <li class="list-group-item">{{post[12]}} Stars</li>
                         <li class="list-group-item">Name: {{post[15]}}</li>
-                        <li class="list-group-item">Experience: {{post[16]}}</li>
+                        <li class="list-group-item">Experience: {{post[16]}} years</li>
                     </div>
                </div>    
            </div>
@@ -44,6 +44,9 @@
                        <button class="btn btn-xs btn-danger">Delete</button>
                    </form>
                    {% endif %}
+                   <form class="form" action="/Posts/{{post[0]}}/wish" method="POST">
+                       <button class="btn btn-xs btn-info">Add to Wish list</button>
+                   </form>
                </div>
            </div>
           

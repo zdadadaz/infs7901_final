@@ -82,7 +82,7 @@ def login_tmp():
         userone = c.fetchall()
         # userone = userone[0][0]
         # print("userone===",userone[0][0])
-        gCurrentUser['username']=userone[0][0]
+        # gCurrentUser['username']=userone[0][0]
         userio.save_userid(gCurrentUser)
         return redirect(url_for('Posts'))        
     return render_template('login.html' );
@@ -176,8 +176,8 @@ def get_post(name):
     c = conn.cursor()
     c.execute("SELECT P.*,U.username,sp.Name,sp.work_year FROM Post P,Seller S,User U, Specialist sp WHERE P.Uid=S.Uid AND S.Uid=U.Uid AND P.Sid = sp.Sid AND P.Postid="+name)
     post = c.fetchone()
-    print("post:=====",post)
-    print("post:=====",post[16])
+    # print("post:=====",post)
+    # print("post:=====",post[16])
     return render_template('show.html',post=post, currentUser=currentUser)
 
 @app.route('/Posts/<string:name>/edit', methods=['GET', 'POST'])
@@ -221,7 +221,7 @@ def edit_post(name):
             title = title.replace("'","''")
             content = content.replace("'","''")
             query = 'UPDATE Post SET Date_post='+"'"+timestamp+"'" +',Title='+"'" +title+"'" +',Description='+"'" +content+"'" +',Location='+"'" +location+"'" +',Color='+"'" +color+"'" +',Car_type='+"'" +carType+"'" +',Brand='+"'" +brand+"'" +',Price='+str(price)+',manu_year='+str(manuYear)+',Sid='+str(specialist)+',Stars='+str(stars) + ',Imageid=' +str(image)+' WHERE Postid='+str(name)
-            print("==========query========",query)
+            # print("==========query========",query)
             # print("specialist=======",specialist,form.specialist.data)
             c.execute(query) #Execute the que   ry
             conn.commit() #Commit the changes
@@ -331,6 +331,25 @@ def Post_delete(name):
     conn.row_factory = lambda cursor, row: row[0]
     c = conn.cursor()
     query= 'DELETE FROM Post WHERE Postid='+str(name)
+    c.execute(query) #Execute the query
+    conn.commit() #Commit the changes
+    return redirect(url_for('Posts'))
+
+@app.route("/Posts/<string:name>/wish", methods=['POST'])
+@login_required
+def Post_wish_add(name):
+    currentUser=userio.read()
+    conn = mysql.connector.connect(**config)
+    c = conn.cursor()
+    c.execute("SELECT MAX(Wishid) FROM Wishlist WHERE Uid="+str(currentUser))
+    wishnum = c.fetchall()
+    wishnum = int(wishnum[0][0])+1
+
+    query = 'insert into Wishlist (Wishid, Uid) VALUES (' + "'" + str(wishnum) + "',"  + "'" + str(currentUser) + "')" 
+    # print("query======",query)
+    c.execute(query) #Execute the query
+    query = 'insert into Contain (Wishid, Uid,Postid) VALUES (' + "'" + str(wishnum) + "',"  + "'" + str(currentUser) + "'," + "'" + str(name) +"')" 
+    # print("query======",query)
     c.execute(query) #Execute the query
     conn.commit() #Commit the changes
     return redirect(url_for('Posts'))
@@ -516,7 +535,7 @@ def wishlist():
         conn = mysql.connector.connect( **config)
         # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database)
         c = conn.cursor()
-        c.execute("SELECT W.*, P.Postid FROM WishList W,Post P WHERE W.Uid = P.Uid")
+        c.execute("SELECT W.*, P.Postid FROM WishList W,Post P,Contain C WHERE C.Postid = P.Postid AND W.Wishid = C.Wishid AND W.Uid = C.Uid ORDER BY W.Uid ")
         wishlist = c.fetchall()
         return render_template('wishlist.html', title='WishList', wishlist=wishlist)
     else:
