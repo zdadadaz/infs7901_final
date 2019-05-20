@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 <div id="jumbotron_id" class="jumbotron">
-    <h1>Wish List CART!</h1>
+    <h1>CART!</h1>
     <p>Find the car you like the most in few clicks</p>
     <p>
-        <!-- <a class="btn btn-primary btn-lg" href="/add_wishlist">Add New Wish</a> -->
+        <a class="btn btn-primary btn-lg" href="/add_wishlist">Add New Wish</a>
+    </p>
+    <p>
+        <a class="btn btn-secondary btn-lg" href="/delete_wishlist">Delete Wish</a>
     </p>
     <p>
         <form method="POST" action="">
@@ -12,6 +15,14 @@
             <div class="dropdown">
                 <div class="row">
                     <div class="col-md-12">
+                        <select name="Wishid" class="btn btn-light dropdown-toggle">
+                            <option value="" disabled selected>Wishid</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
                         <select name="Uid" class="btn btn-light dropdown-toggle">
                             <option value="" disabled selected>Uid</option>
                             <option value="1">1</option>
@@ -20,14 +31,6 @@
                             <option value="4">4</option>
                             <option value="5">5</option>
 
-                        </select>
-                        <select name="Wishid" class="btn btn-light dropdown-toggle">
-                            <option value="" disabled selected>Wishid</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
                         </select>
                         <select name="Postid" class="btn btn-light dropdown-toggle">
                             <option value="" disabled selected>Postid</option>

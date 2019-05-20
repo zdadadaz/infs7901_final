@@ -346,10 +346,8 @@ def Post_wish_add(name):
     wishnum = int(wishnum[0][0])+1
 
     query = 'insert into Wishlist (Wishid, Uid) VALUES (' + "'" + str(wishnum) + "',"  + "'" + str(currentUser) + "')" 
-    # print("query======",query)
     c.execute(query) #Execute the query
     query = 'insert into Contain (Wishid, Uid,Postid) VALUES (' + "'" + str(wishnum) + "',"  + "'" + str(currentUser) + "'," + "'" + str(name) +"')" 
-    # print("query======",query)
     c.execute(query) #Execute the query
     conn.commit() #Commit the changes
     return redirect(url_for('Posts'))
@@ -401,7 +399,7 @@ def figure():
 def Inspect():
     if request.method == 'GET':
 
-        # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database )
+        # conn = mysql.connector.connect( **config )
         conn = mysql.connector.connect(**config )
         c = conn.cursor()
         c.execute("SELECT * FROM Inspection")
@@ -409,7 +407,7 @@ def Inspect():
         return render_template('inspection.html', inspects=inspects )
     else:
         conn = mysql.connector.connect(**config)
-        # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database )
+        # conn = mysql.connector.connect( **config )
         postid = (request.form.get("Postid"))
         inspect_id = (request.form.get("Inspect_id"))
         date = (request.form.get("Date"))
@@ -440,15 +438,15 @@ def Inspect():
                 cond += " AND "
             count = count+1
             if(date=="1"):
-                cond=cond + "Date < 20190901 AND Date>= 20190801" 
+                cond=cond + "Date < 20190501 AND Date>= 20190401" 
             elif(date=="2"):
-                cond=cond + "Date < 20191001 AND Date>= 20190901" 
+                cond=cond + "Date < 20190601 AND Date>= 20190501" 
             elif(date=="3"):
-                cond=cond + "Date < 20191101 AND Date>= 20191001" 
+                cond=cond + "Date < 20190701 AND Date>= 20190601" 
             elif(date=="4"):
-                cond=cond + "Date < 20191201 AND Date>= 20191101"
+                cond=cond + "Date < 20190801 AND Date>= 20190701"
             elif(date=="5"):
-                cond=cond + "Date < 20200101 AND Date>= 20191201"           
+                cond=cond + "Date < 20190901 AND Date>= 20190801"           
         if if_booked is not None:
             if(count>0):
                 cond += " AND "
@@ -470,7 +468,7 @@ def Inspect():
 def rating():
     if request.method == 'GET':
         conn = mysql.connector.connect(**config)
-        # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database )
+        # conn = mysql.connector.connect( **config )
         conn.row_factory = dict_factory
         c = conn.cursor()
         c.execute("SELECT * FROM Rating")
@@ -478,7 +476,7 @@ def rating():
         return render_template('rating.html', title='Rating', rating=rating)
     else:
         conn = mysql.connector.connect(**config)
-        # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database)
+        # conn = mysql.connector.connect( **config)
         uid = (request.form.get("Uid"))
         rid = (request.form.get("Rid"))
         comment = (request.form.get("Comment"))
@@ -533,7 +531,7 @@ def rating():
 def wishlist():
     if request.method == 'GET':
         conn = mysql.connector.connect( **config)
-        # conn = mysql.connector.connect(host=hostname, user=username, passwd=password, db=database)
+        # conn = mysql.connector.connect( **config)
         c = conn.cursor()
         c.execute("SELECT W.*, P.Postid FROM WishList W,Post P,Contain C WHERE C.Postid = P.Postid AND W.Wishid = C.Wishid AND W.Uid = C.Uid ORDER BY W.Uid ")
         wishlist = c.fetchall()
@@ -544,44 +542,51 @@ def wishlist():
         wishid = (request.form.get("Wishid"))
         postid = (request.form.get("Postid"))
         # #Display all blogs from the 'blogs' table
-        cond = 'WHERE '
+        cond = ' '
         count = 0
         if (not (uid is None)):
-            if(count>0):
+            if(count>=0):
                 cond += " AND "
             count = count+1
-            cond=cond + "Uid = " + uid  
+            cond=cond + "W.Uid = " + uid  
         if (not (wishid is None)):
-            if(count>0):
+            if(count>=0):
                 cond += " AND "
             count = count+1
-            cond=cond + "Wishid = "+ wishid 
+            cond=cond + "W.Wishid = "+ wishid 
 
         if (not (postid is None)):
-            if(count>0):
+            if(count>=0):
                 cond += " AND "
             count = count+1
-            cond=cond + "Postid = "+ postid     
+            cond=cond + "P.Postid = "+ postid     
         if(count>0):   
             print("cond:",cond)
             conn.row_factory = dict_factory
             c = conn.cursor()
-            c.execute("SELECT W.*, P.Postid FROM WishList W,Post P " + cond)
+            query="SELECT W.*, P.Postid FROM WishList W,Post P,Contain C WHERE C.Postid = P.Postid AND W.Wishid = C.Wishid AND W.Uid = C.Uid " +cond +" ORDER BY W.Uid "
+            print(query)
+            c.execute(query)
+            # c.execute("SELECT W.*, P.Postid FROM WishList W,Post P " + cond)
             wishlist = c.fetchall()
-            return render_template('wishlist.html', wishlist=wishlist)
+            if(count >0):
+                return render_template('wishlist.html', wishlist=wishlist)
+            else:
+                return redirect(url_for('wishlist'))
         return redirect(url_for('wishlist'))
 
 @app.route('/add_wishlist', methods=['GET', 'POST'])
 def add_wish():
     # number of wish
-    conn = mysql.connector.connect( **config)
+    conn = mysql.connector.connect(**config)
     c = conn.cursor()
-    c.execute("SELECT MAX(*) FROM WishList")
+    c.execute("SELECT COUNT(*) FROM WishList")
     wishnum = c.fetchall()
+    #print("wishnum:",wishnum)
     wishnum = int(wishnum[0][0])+1      
     if request.method == 'GET':
         form=WishlistForm()
-        conn = mysql.connector.connect( **config )
+        conn = mysql.connector.connect(**config )
         conn.row_factory = dict_factory
         c = conn.cursor()
         c.execute("SELECT * FROM Wishlist")
@@ -592,32 +597,75 @@ def add_wish():
     elif request.method == 'POST':
         form = WishlistForm(request.form)
         uid=request.form.get("uid")
+        postid = request.form.get('postid')
         c.execute("SELECT * FROM WishList W WHERE W.Uid="+(uid))
         results = c.fetchall()
-     
-        if form.validate_on_submit():
-            uid = form.uid.data
-            postid = form.postid.data
 
-            c.execute('insert into WishList W,Post P' + uid, postid)
-            print('insert into WishList W,Post P' + uid, postid)
-            conn.commit()
+        
+        c.execute("insert into WishList (Wishid,Uid) VALUES (" + "'" + str(wishnum) +"','"+ str(uid) +"')")
+        c.execute("insert into Contain (Wishid,Uid,Postid) VALUES (" + "'" + str(wishnum) +"','"+ str(uid)  +"','" +str(postid) +"')")
+       
+        conn.commit()
 
-            flash(f'New Wishlist has been created!.', 'success')
-            return redirect(url_for('wishlist.html'))
-        return render_template('add_wishlist.html', title='New WishList', form=form)
+        flash(f'New Wishlist has been created!.', 'success')
+        return redirect(url_for('wishlist'))
 
 @app.route('/edit_rating', methods=['GET', 'POST'])
 def edit_rating():
+    conn = mysql.connector.connect( **config) 
+    c = conn.cursor(buffered=True)
     if request.method=="GET":
-        form = RatingForm()
-        conn = mysql.connector.connect(**config) 
+        form = RatingForm()  
+        c.execute("SELECT * FROM Rating")
+        rating = c.fetchall()
+        return render_template('edit_rating.html', title='edit_rating', rating=rating,form=form)
+    
+    elif request.method == 'POST':
+        form = RatingForm(request.form)
+        uid=request.form.get("uid")
+        rid = request.form.get('rid')
+        #comment = request.form.get('comment')
+        stars = request.form.get('stars')
+        c.execute("SELECT * FROM Rating R WHERE R.rid="+(rid))
+        #results = c.fetchall()
+
+        query="UPDATE Rating SET Stars = " + str(stars) +", Uid = " + str(uid) + " WHERE rid= " + str(rid)
+        c.execute(query)
+        conn.commit()
+
+        flash(f'Rating has been edited!.', 'success')
+        return redirect(url_for('rating')) 
+
+@app.route('/delete_wishlist', methods=['GET', 'POST'])
+def delete_wish():
+    conn = mysql.connector.connect( **config)
+    c = conn.cursor(buffered=True)
+    #c.execute("SELECT COUNT(*) FROM WishList") 
+    if request.method == 'GET':
+        form=WishlistForm()
+        conn = mysql.connector.connect( **config )
         conn.row_factory = dict_factory
         c = conn.cursor()
-        c.execute("SELECT * FROM Rating")            
-        rating = c.fetchall()
-        return render_template('edit_rating.html', title='edit_rating', form=form) 
-    
+        c.execute("SELECT W.*, P.Postid FROM WishList W,Post P WHERE W.Uid = P.Uid")
+        wishlist = c.fetchall()
+        return render_template('delete_wishlist.html', title='Wishlist', wishlist=wishlist,form=form)
+
+    elif request.method == 'POST':
+        form = WishlistForm(request.form)
+        uid=request.form.get("uid")
+        wishid = request.form.get("wishid")
+        c.execute("SELECT * FROM WishList W WHERE W.Wishid= "+ wishid)
+        results = c.fetchall()
+        
+        c.execute('DELETE FROM WishList WHERE Wishid='+ wishid)
+        #c.execute('DELETE FROM Contain WHERE Wishid='+ wishid)
+       
+        conn.commit()
+
+        flash(f'Wishlist has been deleted!.', 'success')
+        return redirect(url_for('wishlist'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 

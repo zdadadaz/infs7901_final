@@ -491,3 +491,24 @@ BEGIN
     END IF;
 END;//
 delimiter ;
+
+delimiter //
+CREATE TRIGGER pricecheck2 BEFORE UPDATE ON Post
+FOR EACH ROW
+BEGIN
+    IF NEW.Price < 0 THEN
+        SET NEW.Price = 0;
+    END IF;
+END;//
+delimiter ;
+
+delimiter //
+CREATE TRIGGER pricecheck2 BEFORE UPDATE ON Post
+FOR EACH ROW
+BEGIN
+    select CUT()
+    IF NEW.Price < 0 THEN
+        SET NEW.Price = 0;
+    END IF;
+END;//
+delimiter ;
