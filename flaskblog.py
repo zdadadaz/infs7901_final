@@ -16,7 +16,7 @@ config = {
   'user': 'root',
   'password': 'root',
   'unix_socket': '/Applications/MAMP/tmp/mysql/mysql.sock',
-  'database': '7901_final',
+  'database': '7901_mm',
   'raise_on_warnings': True,
 }
 

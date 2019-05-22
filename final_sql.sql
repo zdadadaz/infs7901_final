@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: May 17, 2019 at 03:55 AM
+-- Generation Time: May 22, 2019 at 05:46 AM
 -- Server version: 5.7.25
 -- PHP Version: 7.3.1
 
@@ -11,7 +11,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 --
--- Database: `7901_lu`
+-- Database: `7901_mm`
 --
 
 -- --------------------------------------------------------
@@ -134,6 +134,18 @@ INSERT INTO `Inspection` (`Inspect_id`, `Date`, `Location`, `If_booked`, `Postid
 (4, '2019-07-19', 'brisbane', 1, 2),
 (5, '2019-04-11', 'brisbane', 0, 1);
 
+--
+-- Triggers `Inspection`
+--
+DELIMITER $$
+CREATE TRIGGER `ifbookafterinsert` BEFORE INSERT ON `Inspection` FOR EACH ROW BEGIN
+    IF NEW.If_booked < 1 THEN
+        SET NEW.If_booked = 1;
+    END IF;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -168,6 +180,26 @@ INSERT INTO `Post` (`Postid`, `Date_post`, `Title`, `Description`, `Location`, `
 (4, '2019-01-24', '2009 Hyundai I30', 'Hyundai i30 wagon diesel for sale, low km\'s, good sturdy car with plenty of space for prams/kids. Serviced regularly (oil change done around 1-2 weeks ago) and receipts for all work we\'ve had done, log book entries from previous owner. Pick up in etrie, reasonable offers considered, low ball offers will be ignored.', 'Brisbane', 'White', 'Auto', 'Hyundai', 7500, '2009', 3, 3, 3, '4'),
 (5, '2019-03-23', '2007 Toyota Corolla', 'Up for sale my Toyota Corolla 2007 Automatic \r\ncomes with roadworthy certificate and 5 months rego very low km 154346 km everything working perfectly but same dents around the car welcome for inspection location Logan Central', 'Brisbane', 'Gray', 'Auto', 'Toyota', 4000, '2009', 1, 1, 2, '5'),
 (6, '2019-04-11', '2010 Mazda 2010', 'NEED TO SELL MY CAR ASAP!!! Selling my Mazda 2 (2010, manual)\r\nIt is in perfect mechanic condition, new tires, service, rego and rwc...\r\nJust selling it cause I\'m moving....\r\nPrice negotiable', 'Brisbane', 'red', 'manu', 'Mazda', 4750, '2010', 4, 1, 3, '6');
+
+--
+-- Triggers `Post`
+--
+DELIMITER $$
+CREATE TRIGGER `pricecheck` BEFORE INSERT ON `Post` FOR EACH ROW BEGIN
+    IF NEW.Price < 0 THEN
+        SET NEW.Price = 0;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `pricecheck2` BEFORE UPDATE ON `Post` FOR EACH ROW BEGIN
+    IF NEW.Price < 0 THEN
+        SET NEW.Price = 0;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -271,22 +303,21 @@ INSERT INTO `User` (`Uid`, `username`, `dob`, `Phone`, `email`, `password`) VALU
 
 CREATE TABLE `User_Address` (
   `Uid` int(11) NOT NULL,
-  `Country` char(20) NOT NULL,
-  `Number` int(11) NOT NULL,
-  `Type(Street,Place...)` int(11) NOT NULL,
-  `unitnumber` int(11) DEFAULT NULL
+  `County` char(20) NOT NULL,
+  `HouseNumber` int(11) NOT NULL,
+  `StreetType` char(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `User_Address`
 --
 
-INSERT INTO `User_Address` (`Uid`, `Country`, `Number`, `Type(Street,Place...)`, `unitnumber`) VALUES
-(1, '21,John Street', 0, 0, NULL),
-(2, '22,John Street', 0, 0, NULL),
-(3, '23,John Street', 0, 0, NULL),
-(4, '24,John Street', 0, 0, NULL),
-(5, '25,John Street', 0, 0, NULL);
+INSERT INTO `User_Address` (`Uid`, `County`, `HouseNumber`, `StreetType`) VALUES
+(1, 'sunnybank', 16, 'place'),
+(2, 'sunnybank', 2, 'street'),
+(3, 'sunnybank', 12, 'place'),
+(4, 'sunnybank', 12, 'place'),
+(5, 'sunnybank', 22, 'road');
 
 -- --------------------------------------------------------
 
@@ -467,48 +498,3 @@ ALTER TABLE `User_Address`
 --
 ALTER TABLE `Wishlist`
   ADD CONSTRAINT `Wishlist_ibfk_1` FOREIGN KEY (`Uid`) REFERENCES `Buyer` (`Uid`) ON DELETE CASCADE;
-
-
-
-delimiter //
-CREATE TRIGGER ifbookafterinsert BEFORE INSERT ON Inspection
-FOR EACH ROW
-BEGIN
-    IF NEW.If_booked < 1 THEN
-        SET NEW.If_booked = 1;
-    END IF;
-END;//
-delimiter ;
-
-
-
-delimiter //
-CREATE TRIGGER pricecheck BEFORE INSERT ON Post
-FOR EACH ROW
-BEGIN
-    IF NEW.Price < 0 THEN
-        SET NEW.Price = 0;
-    END IF;
-END;//
-delimiter ;
-
-delimiter //
-CREATE TRIGGER pricecheck2 BEFORE UPDATE ON Post
-FOR EACH ROW
-BEGIN
-    IF NEW.Price < 0 THEN
-        SET NEW.Price = 0;
-    END IF;
-END;//
-delimiter ;
-
-delimiter //
-CREATE TRIGGER pricecheck2 BEFORE UPDATE ON Post
-FOR EACH ROW
-BEGIN
-    select CUT()
-    IF NEW.Price < 0 THEN
-        SET NEW.Price = 0;
-    END IF;
-END;//
-delimiter ;
