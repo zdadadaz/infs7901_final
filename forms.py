@@ -19,12 +19,15 @@ class WishlistForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     dob = StringField("date of birth",validators=[DataRequired()])
-    phone = StringField("phone",validators=[DataRequired()])
+    phone = StringField("phone (10 numbers)",validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    budget = StringField("budget",validators=[DataRequired()])
-    account = StringField("account",validators=[DataRequired()])
+    county = StringField('County', validators=[DataRequired()])
+    type = StringField('StreetType', validators=[DataRequired()])
+    number = StringField('HouseNumber', validators=[DataRequired()])
+    budget = StringField("Do you want to be a Buyer(if yes, please enter you budget, if not, please fill no)",validators=[DataRequired()])
+    account = StringField("Do you want to be a Seller(if yes, please enter you account number, if not, please fill no)",validators=[DataRequired()])
     submit = SubmitField('Sign Up')
 
 

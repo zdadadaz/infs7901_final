@@ -51,6 +51,9 @@ def register():
         Phone = form.phone.data
         email = form.email.data
         password = form.password.data
+        county = form.county.data
+        number = form.number.data
+        type = form.type.data
         budget = form.budget.data
         account = form.account.data
         c = conn.cursor()
@@ -61,11 +64,21 @@ def register():
         query = "insert into User (Uid,username,dob,Phone,email,password) VALUES(" + "'" + str(usernum)+ "'," + "'" + username + "'," + "'" + dob + "'," + "'" + Phone + "'," + "'" + email + "'," + "'" + password +  "'" ')'
         print("query======",query)
         c.execute(query)
+        conn.commit()
+        query1 = "insert into User_Address (Uid,County,HouseNumber,StreetType) VALUES(" + "'" + str(usernum) + "'," + "'" + county + "'," + "'" + number + "'," + "'" + type +  "'" ')'
+        c.execute(query1)
         conn.commit() #Commit the changes
-
-        flash(f'Account created for {form.username.data}!', 'success')
+        if budget!="no":
+            query2="insert into Buyer(Uid,Budget) VALUES (" + "'" + str(usernum) + "'," + "'" + budget +  "'" ')'
+            c.execute(query2)
+            conn.commit()
+        if account!="no":
+            query3 = "insert into Seller(Uid,acc_number) VALUES (" + "'" + str(usernum) + "'," + "'" + account + "'" ')'
+            c.execute(query3)
+            conn.commit()
+        flash(f'Account created for {form.username.data}!,please remember you id {usernum}', 'success')
         return redirect(url_for('Posts'))
-    return render_template('register.html', title='Register', form=form )
+    return render_template('register.html', tit2le='Register', form=form )
 
 @app.route("/", methods=['GET'])
 def landing():
